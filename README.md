@@ -3,10 +3,24 @@
 rvasm is a assembler for the RV32M Instruction set for RISC-V processors
 the supported instructions are given [here](/instruction_set_encoding.s)
 
-for using it first compile the c code
+## building the library
+
+create a build folder, navigate into it and use cmake command to generate Makefile
 ```
-gcc rvasm.c -o rvasm
+mkdir build
 ```
+```
+cd build
+```
+```
+cmake ..
+```
+now run the generated Makefile to generate the assembler
+```
+make
+```
+your assembler binary ```rvasm``` is ready in build folder
+
 now you can use it by
 ```
 rvasm YOUR_CODE
