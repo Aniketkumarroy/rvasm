@@ -1,2 +1,5 @@
 .vscode
 build
+*.hex
+rvasm
+code.s

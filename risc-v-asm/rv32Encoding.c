@@ -4,7 +4,7 @@
 
 #include"rv32Encoding.h"
 
-void U_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
+void U_Encoding(char *opcode, char *code, char *binary, void(*error)(char*, int)){
     char *ins_1_0 = "11";
     char *ins_6_2 = opcode; // opcode
     char ins_11_7[6]; // rd
@@ -12,11 +12,11 @@ void U_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     char *c = strtok(code, " ");
     c = strtok(NULL, " ");
 
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_11_7, error);
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     ValueInterpreter(c, binary, 32, error);
     strcpy(ins_31_12, binary + 12);
 
@@ -26,7 +26,7 @@ void U_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     strcat(binary, ins_6_2);
     strcat(binary, ins_1_0);
 }
-void I_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
+void I_Encoding(char *opcode, char *code, char *binary, void(*error)(char*, int)){
     char *ins_1_0 = "11";
     char *ins_6_2 = opcode; // opcode
     char ins_11_7[6]; // rd
@@ -36,7 +36,7 @@ void I_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     char *c = strtok(code, " ");
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_11_7, error);
 
     ins_14_12[0] = '0';
@@ -45,11 +45,11 @@ void I_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     ins_14_12[3] = '\0';
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_19_15, error);
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     ValueInterpreter(c, binary, 32, error);
     strcpy(ins_31_20, binary + 20);
 
@@ -61,7 +61,7 @@ void I_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     strcat(binary, ins_6_2);
     strcat(binary, ins_1_0);
 }
-void R_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
+void R_Encoding(char *opcode, char *code, char *binary, void(*error)(char*, int)){
     char *ins_1_0 = "11";
     char *ins_6_2 = opcode; // opcode
     char ins_11_7[6]; // rd
@@ -72,7 +72,7 @@ void R_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     char *c = strtok(code, " ");
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_11_7, error);
 
     ins_14_12[0] = '0';
@@ -81,11 +81,11 @@ void R_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     ins_14_12[3] = '\0';
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_19_15, error);
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_24_20, error);
 
     strcpy(ins_31_25, "0000000");
@@ -99,7 +99,7 @@ void R_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     strcat(binary, ins_6_2);
     strcat(binary, ins_1_0);
 }
-void S_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
+void S_Encoding(char *opcode, char *code, char *binary, void(*error)(char*, int)){
     char *ins_1_0 = "11";
     char *ins_6_2 = opcode; // opcode
     char ins_11_7[6]; // offset[4:0]
@@ -115,16 +115,16 @@ void S_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     ins_14_12[3] = '\0';
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_24_20, error);
 
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     ValueInterpreter(c, binary, 32, error); // offset
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_19_15, error);
 
     strcpy(ins_11_7, binary + 27);
@@ -140,7 +140,7 @@ void S_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     strcat(binary, ins_6_2);
     strcat(binary, ins_1_0);
 }
-void J_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
+void J_Encoding(char *opcode, char *code, char *binary, void(*error)(char*, int)){
     char *ins_1_0 = "11";
     char *ins_6_2 = opcode; // opcode
     char ins_11_7[6]; // rd
@@ -149,11 +149,11 @@ void J_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     char *c = strtok(code, " ");
     c = strtok(NULL, " ");
 
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_11_7, error);
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     ValueInterpreter(c, binary, 32, error);
 
     binary[31] = '\0';
@@ -173,7 +173,7 @@ void J_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     strcat(binary, ins_6_2);
     strcat(binary, ins_1_0);
 }
-void B_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
+void B_Encoding(char *opcode, char *code, char *binary, void(*error)(char*, int)){
     char *ins_1_0 = "11";
     char *ins_6_2 = opcode; // opcode
     char ins_11_7[6]; // offset[4:1|11]
@@ -189,15 +189,15 @@ void B_Encoding(char *opcode, char *code, char *binary, void (*error)(char*)){
     ins_14_12[3] = '\0';
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_19_15, error);
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     RegisterCode(c, ins_24_20, error);
 
     c = strtok(NULL, " ");
-    if(c==NULL && error != NULL) error("Wrong instruction\n");
+    if(c==NULL && error != NULL) error("Wrong instruction\n", 1);
     ValueInterpreter(c, binary, 32, error); // offset
 
     binary[31] = '\0';

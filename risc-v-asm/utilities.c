@@ -41,10 +41,10 @@ void Preprocess(char **line, char *comment){
     }
     (*line)[i] = '\0';
 }
-void RegisterCode(char* r, char *binary, void (*error)(char*)){
-    if(!isdecimal(r+1) && error != NULL) error("Invalid Register\n");
+void RegisterCode(char* r, char *binary, void (*error)(char*, int)){
+    if(!isdecimal(r+1) && error != NULL) error("Invalid Register\n", 1);
     if((atoi(r+1) > 31 || atoi(r+1) < 0) && error != NULL){
-        error("Register does not exist in RV32M\n");
+        error("Register does not exist in RV32M\n", 1);
     }
     ValueInterpreter(r+1, binary, 5, error);
 }

@@ -15,7 +15,7 @@ int HEX_PRINT = 0;
 
 unsigned int assembly_file_line_no = -1;
 
-void exit_from_program_with_message(char *msg, unsigned short int e){
+void exit_from_program_with_message(char *msg, int e){
     printf("%s", msg);
     if(e) printf("ERROR at line no. %d", assembly_file_line_no);
     if(INPUT_FILE != NULL) fclose(INPUT_FILE);
@@ -65,12 +65,12 @@ void DirectiveType(char *code, char *mnemonics){
         if(*c == '-' || *c == '+')
         ++c;
         char binary[33], hex[9];
-        ValueInterpreter(c, binary, 32, NULL);
+        ValueInterpreter(c, binary, 32, exit_from_program_with_message);
         BinarytoHexadecimal(binary, hex);
         strcpy(LINE_NO_HEX, hex);
     }else if(strcmp(mnemonics, "#db") == 0){
         char binary[33];
-        ValueInterpreter(c, binary, 32, NULL);
+        ValueInterpreter(c, binary, 32, exit_from_program_with_message);
         WriteToFile(binary);
     }else exit_from_program_with_message("Wrong directive\n", 1);
 }
@@ -80,7 +80,7 @@ void UpperImmediateType(char *code, char* mnemonics){
     if(strcmp(mnemonics, "lui") == 0) strcpy(opcode, "01101");
     else if(strcmp(mnemonics, "auipc") == 0) strcpy(opcode, "00101");
     else exit_from_program_with_message("Wrong Instruction\n", 1);
-    U_Encoding(opcode, code, binary, NULL);
+    U_Encoding(opcode, code, binary, exit_from_program_with_message);
     WriteToFile(binary);
 }
 
@@ -88,49 +88,49 @@ void ImmediateType(char *code, char *mnemonics){
     char opcode[7], binary[33];
     if(strcmp(mnemonics, "addi") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '0'; binary[18] = '0'; binary[19] = '0';
     }
     else if(strcmp(mnemonics, "slti") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '0'; binary[18] = '1'; binary[19] = '0';
     }
     else if(strcmp(mnemonics, "sltiu") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '0'; binary[18] = '1'; binary[19] = '1';
     }
     else if(strcmp(mnemonics, "xori") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '1'; binary[18] = '0'; binary[19] = '0';
     }
     else if(strcmp(mnemonics, "ori") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '1'; binary[18] = '1'; binary[19] = '0';
     }
     else if(strcmp(mnemonics, "andi") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '1'; binary[18] = '1'; binary[19] = '1';
     }
     else if(strcmp(mnemonics, "slli") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '0'; binary[18] = '0'; binary[19] = '1';
         binary[0] = '0'; binary[1] = '0'; binary[2] = '0'; binary[3] = '0'; binary[4] = '0'; binary[5] = '0'; binary[6] = '0';
     }
     else if(strcmp(mnemonics, "srli") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '1'; binary[18] = '0'; binary[19] = '1';
         binary[0] = '0'; binary[1] = '0'; binary[2] = '0'; binary[3] = '0'; binary[4] = '0'; binary[5] = '0'; binary[6] = '0';
     }
     else if(strcmp(mnemonics, "srai") == 0){
         strcpy(opcode, "00100");
-        I_Encoding(opcode, code, binary, NULL);
+        I_Encoding(opcode, code, binary, exit_from_program_with_message);
         binary[17] = '1'; binary[18] = '0'; binary[19] = '1';
         binary[0] = '0'; binary[1] = '1'; binary[2] = '0'; binary[3] = '0'; binary[4] = '0'; binary[5] = '0'; binary[6] = '0';
     }
@@ -141,7 +141,7 @@ void ImmediateType(char *code, char *mnemonics){
 
 void RegisterType(char *code, char *mnemonics){
     char *opcode = "01100", binary[33];
-    R_Encoding(opcode, code, binary, NULL);
+    R_Encoding(opcode, code, binary, exit_from_program_with_message);
     if(strcmp(mnemonics, "add") == 0){
         binary[17] = '0'; binary[18] = '0'; binary[19] = '0';
     }
@@ -238,7 +238,7 @@ void LoadType(char *code, char *mnemonics){
     strcat(new_code, " ");
     strcat(new_code, offset);
     
-    I_Encoding(opcode, new_code, binary, NULL);
+    I_Encoding(opcode, new_code, binary, exit_from_program_with_message);
 
     if(strcmp(mnemonics, "lb") == 0){
         binary[17] = '0'; binary[18] = '0'; binary[19] = '0';
@@ -268,7 +268,7 @@ void StoreType(char *code, char *mnemonics){
     if(found != NULL)
     *found = '\0';
 
-    S_Encoding(opcode, code, binary, NULL);
+    S_Encoding(opcode, code, binary, exit_from_program_with_message);
 
     if(strcmp(mnemonics, "sb") == 0){
         binary[17] = '0'; binary[18] = '0'; binary[19] = '0';
@@ -286,20 +286,20 @@ void StoreType(char *code, char *mnemonics){
 
 void JAL(char *code, char* mnemonics){
     char binary[33], *opcode = "11011";
-    J_Encoding(opcode, code, binary, NULL);
+    J_Encoding(opcode, code, binary, exit_from_program_with_message);
     WriteToFile(binary);
 }
 
 void JALR(char *code, char *mnemonics){
     char binary[33], *opcode = "11001";
-    I_Encoding(opcode, code, binary, NULL);
+    I_Encoding(opcode, code, binary, exit_from_program_with_message);
     WriteToFile(binary);
 }
 
 void BranchType(char *code, char *mnemonics){
     char binary[33], *opcode = "11000";
 
-    B_Encoding(opcode, code, binary, NULL);
+    B_Encoding(opcode, code, binary, exit_from_program_with_message);
 
     if(strcmp(mnemonics, "beq") == 0){
         binary[17] = '0'; binary[18] = '0'; binary[19] = '0';

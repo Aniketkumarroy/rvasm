@@ -103,7 +103,7 @@ int isdecimal(char *c){
     }
     return 1;
 }
-void hexDigitToBinary(char hexDigit, char *binary, void (*error)(char*)) {
+void hexDigitToBinary(char hexDigit, char *binary, void(*error)(char*, int)) {
     switch (hexDigit) {
         case '0': strcpy(binary, "0000"); break;
         case '1': strcpy(binary, "0001"); break;
@@ -121,7 +121,7 @@ void hexDigitToBinary(char hexDigit, char *binary, void (*error)(char*)) {
         case 'd': case 'D': strcpy(binary, "1101"); break;
         case 'e': case 'E': strcpy(binary, "1110"); break;
         case 'f': case 'F': strcpy(binary, "1111"); break;
-        default: if (error != NULL) error("Wrong hex digit provided\n");
+        default: if (error != NULL) error("Wrong hex digit provided\n", 1);
     }
 }
 char BinaryTohexDigit(char *binary) {
@@ -160,8 +160,8 @@ void HexadecimalToBinary(char *hex, char binaryString[], unsigned short size){
         hex++;
     }
 }
-void decimalToBinary(int decimalNumber, char binaryString[], unsigned short size, void (*error)(char*)) {
-    if (binaryString == NULL && error != NULL) error("NO binary no. is provided\n");
+void decimalToBinary(int decimalNumber, char binaryString[], unsigned short size, void(*error)(char*, int)) {
+    if (binaryString == NULL && error != NULL) error("NO binary no. is provided\n", 1);
 
     // Use bitwise operations to convert decimal to binary
     for (int i = size-1; i >= 0; i--) {
@@ -269,16 +269,16 @@ uint32_t BinaryToDecimal(char *binary){
 
     return value;
 }
-void ValueInterpreter(char *value, char binaryString[], unsigned short size, void (*error)(char*)){
-        if(*value == '\0' && error != NULL) error("empty value provided\n");
+void ValueInterpreter(char *value, char binaryString[], unsigned short size, void(*error)(char*, int)){
+        if(*value == '\0' && error != NULL) error("empty value provided\n", 1);
 
     if(strlen(value) > 2 && value[0] == '0' && value[1] == 'x'){
         if(isHexadecimal(value + 2)){
             HexadecimalToBinary(value+2, binaryString, size);
-        }else if(error != NULL) error("Invalid Hex value");
+        }else if(error != NULL) error("Invalid Hex value", 1);
     }else{
         if (isdecimal(value)){
             decimalToBinary(atoi(value), binaryString, size, error);
-        }else if(error != NULL) error("Invalid Decimal value");
+        }else if(error != NULL) error("Invalid Decimal value", 1);
     }
 }
