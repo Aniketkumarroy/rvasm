@@ -14,7 +14,7 @@ char LINE_NO_HEX[9] = "00000000";
 char *COMMENT = ";";
 int HEX_PRINT = 0;
 
-unsigned int assembly_file_line_no = -1;
+unsigned int assembly_file_line_no = 0;
 
 void exit_from_program_with_message(char *msg, int e){
     printf("%s", msg);
@@ -161,7 +161,7 @@ int main(int argc, char const *argv[])
 
         // argument for getting the comment symbol
         int i = find(argc, argv, "-c");
-        if(i != -1)
+        if(i != -1 && i+1 < argc)
         COMMENT = (char*)argv[i+1];
         
         // argument for getting the comment symbol
