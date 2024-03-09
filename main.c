@@ -161,8 +161,14 @@ int main(int argc, char const *argv[])
 
         // argument for getting the comment symbol
         int i = find(argc, argv, "-c");
-        if(i != -1 && i+1 < argc)
-        COMMENT = (char*)argv[i+1];
+        if(i != -1) {
+            if(i + 1 < argc)
+            COMMENT = (char*)argv[i+1];
+            else {
+                printf("comment token not provided");
+                exit_from_program(0);
+            }
+        }
         
         // argument for getting the comment symbol
         i = find(argc, argv, "-hex");
