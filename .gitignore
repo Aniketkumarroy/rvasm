@@ -3,3 +3,4 @@ build
 *.hex
 rvasm
 code.s
+*.out

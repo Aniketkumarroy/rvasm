@@ -8,4 +8,5 @@ project(rvasm VERSION 1.0)
 add_subdirectory(risc-v-asm)
 
 add_executable(rvasm main.c)
-target_link_libraries(rvasm PUBLIC risc-v-asm m)
+target_link_libraries(rvasm PRIVATE ${RISC_V_ASM_LIBS} m)
+target_include_directories(rvasm PRIVATE ${RISC_V_ASM_INCLUDE_DIRS})
