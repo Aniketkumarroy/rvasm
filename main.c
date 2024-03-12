@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<ctype.h>
+#include<math.h>
 #include<hex.h>
 #include<rv32Encoding.h>
 #include<InstructionEncoding.h>
@@ -10,8 +11,9 @@
 FILE *INPUT_FILE = NULL;
 FILE *OUTPUT_FILE = NULL;
 unsigned int LINE_NO = 0;
-char LINE_NO_HEX[9] = "00000000";
+char ADDRESS[9] = "00000000";
 char *COMMENT = ";";
+int format = -1;
 int HEX_PRINT = 0;
 
 unsigned int assembly_file_line_no = 0;
@@ -37,20 +39,68 @@ int find(int n_array, const char **c_array, char *c){
     return -1;
 }
 void WriteToFile(char *code){
-    int line_size = 45; // 10(decimal address) + 1(colon)+ 1(space) 8(instruction byte) + 1(null character)
-    char buffer[line_size];
-    // format will be:
-    // LINE_NO: CODE
-    sprintf(buffer, "%s: ", LINE_NO_HEX); // LINE_NO:
-    if(HEX_PRINT){
-        char hex_code[9];
-        BinarytoHexadecimal(code, hex_code);
-        strcat(buffer, hex_code);
+    if(format == -1) {
+        // format will be:
+        // Address: CODE
+        if(HEX_PRINT){
+            int line_size = 19; // 8(hexadecimal address) + 1(colon)+ 1(space) 4x2(instruction byte) + 1(null character)
+            char buffer[line_size];
+            sprintf(buffer, "%s: ", ADDRESS); // ADDRESS:
+            char hex_code[9];
+            BinarytoHexadecimal(code, hex_code);
+            strcat(buffer, hex_code);
+            fprintf(OUTPUT_FILE, "%s\n", buffer);
+            HexadecimalAdder(ADDRESS, "4", ADDRESS);
+        }
+        else {
+            int line_size = 43; // 8(hexadecimal address) + 1(colon)+ 1(space) 4x8(instruction byte) + 1(null character)
+            char buffer[line_size];
+            sprintf(buffer, "%s: ", ADDRESS); // ADDRESS:
+            strcat(buffer, code);                 // Address_NO: CODE
+            fprintf(OUTPUT_FILE, "%s\n", buffer);
+            HexadecimalAdder(ADDRESS, "4", ADDRESS);
+        }
     }
-    else strcat(buffer, code);                 // LINE_NO: CODE
-    
-    fprintf(OUTPUT_FILE, "%s\n", buffer);
-    HexadecimalAdder(LINE_NO_HEX, "4", LINE_NO_HEX);
+    // else {
+    //     // format will be:
+    //     // Address: 1_byte_CODE 1_byte_CODE ...
+    //     int line_size = 8 + 1 + 1 + 3*format; // 8(hexadecimal address) + 1(colon)+ 1(space) string of bytes separated by ' ' + 1(null character)
+    //     char buffer[line_size];
+    //     if(HEX_PRINT){
+    //         int j = 0;
+    //         char hex_code[9];
+            
+    //         int d = 1;
+    //         while (format/pow(10, d)) d++;
+            
+    //         char n_addr[d];
+    //         sprintf(n_addr, "%d", format);
+    //         BinarytoHexadecimal(code, hex_code);
+    //         while(j < 7) {
+
+    //             int n = format;
+    //             while (n > 0)
+    //             sprintf(buffer, "%s: ", ADDRESS); // ADDRESS:
+    //             char tmp = hex_code[j+2];
+    //             hex_code[j+2] = '\0';
+    //             strcat(buffer, hex_code + j);
+    //             if(j+2 != 8)
+    //             strcat(buffer, ' ');
+    //             else
+    //             strcat(buffer, '\0');
+    //             hex_code[j+2] = tmp;
+    //             j += 2;
+    //             fprintf(OUTPUT_FILE, "%s\n", buffer);
+    //             HexadecimalAdder(ADDRESS, n_addr, ADDRESS);
+    //         }
+    //     }
+    //     else {
+    //         strcat(buffer, code);                 // Address: CODE
+            
+    //         fprintf(OUTPUT_FILE, "%s\n", buffer);
+    //         HexadecimalAdder(ADDRESS, "4", ADDRESS);
+    //     }
+    // }
 }
 
 void DirectiveType(char *code, char *mnemonics, void(*Writefunc)(char*), void(*Error)(char*, int)){
@@ -63,7 +113,7 @@ void DirectiveType(char *code, char *mnemonics, void(*Writefunc)(char*), void(*E
         char binary[33], hex[9];
         ValueInterpreter(c, binary, 32, Error);
         BinarytoHexadecimal(binary, hex);
-        strcpy(LINE_NO_HEX, hex);
+        strcpy(ADDRESS, hex);
     }else if(strcmp(mnemonics, "#db") == 0){
         char binary[33];
         ValueInterpreter(c, binary, 32, Error);
@@ -170,10 +220,21 @@ int main(int argc, char const *argv[])
             }
         }
         
-        // argument for getting the comment symbol
+        // argument for knowing type of output hex or binary
         i = find(argc, argv, "-hex");
         if(i != -1)
         HEX_PRINT = 1;
+
+        // argument for getting type of format
+        i = find(argc, argv, "-f");
+        if(i != -1) {
+            if(i + 1 < argc)
+            format = atoi(argv[i+1]);
+            else {
+                printf("format type not provided");
+                exit_from_program(0);
+            }
+        }
 
 
         // argument for getting the name of output file
@@ -204,7 +265,6 @@ int main(int argc, char const *argv[])
             char *line = buffer;
             Preprocess(&line, COMMENT);
             Assembler(line);
-            // printf("%s", line);
         }
 
         // Close the file
