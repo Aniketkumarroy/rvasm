@@ -67,3 +67,7 @@ Options:
 -f, format, it specifies how many bytes separated by spaces to be printed in each line of output file, optional flag, by default whole instruction is printed in a line without any spaces
 -h, -help, help flag
 ```
+## how to contribute
+if you want to add more instruction support, start first implementing a function in [InstructionEncoding.c](risc-v-asm/InstructionEncoding.c). take care of the function signature in [InstructionEncoding.h](risc-v-asm/include/InstructionEncoding.h). you may need to make the binary encoding for your instruction type, for that you need to define the encoding function in [rv32Encoding.h](risc-v-asm/include/rv32Encoding.h) and implement it [rv32Encoding.c](risc-v-asm/rv32Encoding.c).
+
+once all this is done just add your function and its corresponding mnemonic in [main.c](main.c#opcode_lookup) in ``opcode_lookup``. remember to write the mnemonic in all smaller case.
