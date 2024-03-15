@@ -30,18 +30,18 @@ your assembler binary ```rvasm``` is ready in build folder
 
 now you can use it by
 ```bash
-rvasm YOUR_CODE
+./rvasm YOUR_CODE
 ```
 
 it will generate a file with name ```YOUR_CODE.out```
 for specifying the output file name use the use the ```-o``` flag
 ```bash
-rvasm YOUR_CODE -o output
+./rvasm YOUR_CODE -o output
 ```
 the output will be in binary format in 0s and 1s
 to get a hex output or hex file use the ```-hex``` flag
 ```bash
-rvasm YOUR_CODE -o output -hex
+./rvasm YOUR_CODE -o output -hex
 ```
 ## options
 to know about its various options use
