@@ -41,10 +41,10 @@ int find(int n_array, const char **c_array, char *c){
     return -1;
 }
 void WriteToFile(char *code){
-    sprintf(OutBuffer, "%s: ", ADDRESS); // ADDRESS:
     if(format == -1) {
         // format will be:
         // Address: CODE
+        sprintf(OutBuffer, "%s: ", ADDRESS); // ADDRESS:
         if(HEX_PRINT){
             char hex_code[9];
             BinarytoHexadecimal(code, hex_code);
@@ -53,6 +53,8 @@ void WriteToFile(char *code){
         else {
             strcat(OutBuffer, code);             // Address_NO: CODE
         }
+        fprintf(OUTPUT_FILE, "%s\n", OutBuffer);
+        HexadecimalAdder(ADDRESS, addrIncrement, ADDRESS);
     }
     else {
         if(HEX_PRINT) {
@@ -60,7 +62,7 @@ void WriteToFile(char *code){
             BinarytoHexadecimal(code, hex_code);
             int i = 0;
             while (i < INSTRUCTION_SIZE_BYTE) {
-                strncpy(InstrByte, hex_code + (2*i), 2);
+                strncpy(InstrByte, hex_code + 2*i, 2);
                 InstrByte[2] = '\0';
                 enqueue(&ByteQueue, InstrByte);
                 i++;
@@ -68,17 +70,18 @@ void WriteToFile(char *code){
             
             char *byte;
             while(ByteQueue.no_elements >= format) {
+                sprintf(OutBuffer, "%s: ", ADDRESS); // ADDRESS:
                 for(int i = 0; i < format; i++) {
                     byte = dequeue(&ByteQueue);
                     if(byte == NULL) break;
                     strcat(OutBuffer, byte);
                     strcat(OutBuffer, " ");
                 }
+                fprintf(OUTPUT_FILE, "%s\n", OutBuffer);
+                HexadecimalAdder(ADDRESS, addrIncrement, ADDRESS);
             }
         }
     }
-    fprintf(OUTPUT_FILE, "%s\n", OutBuffer);
-    HexadecimalAdder(ADDRESS, addrIncrement, ADDRESS);
 }
 
 void DirectiveType(char *code, char *mnemonics, void(*Writefunc)(char*), void(*Error)(char*, int)){
@@ -209,7 +212,7 @@ int main(int argc, char const *argv[])
         if(i != -1) {
             if(i + 1 < argc) {
                 format = atoi(argv[i+1]);
-                int s = (format > INSTRUCTION_SIZE_BYTE) ? format : INSTRUCTION_SIZE_BYTE;
+                int s = format + INSTRUCTION_SIZE_BYTE;
                 int str_size;
                 if (HEX_PRINT) str_size = 3; // 2(for 1 byte) + 1(null character)
                 else str_size = 9; // 8(1 for each 8 binary bits) + 1(null character)
@@ -269,13 +272,24 @@ int main(int argc, char const *argv[])
             Assembler(line);
         }
 
+        if(format != -1) {
+            if(!isEmpty(&ByteQueue)) {
+                sprintf(OutBuffer, "%s: ", ADDRESS);
+                while(!isEmpty(&ByteQueue)) {
+                    char* byte = dequeue(&ByteQueue);
+                    if(byte == NULL) break;
+                    strcat(OutBuffer, byte);
+                    strcat(OutBuffer, " ");
+                }
+                fprintf(OUTPUT_FILE, "%s\n", OutBuffer);
+            }
+            DeleteQueue(&ByteQueue);
+        }
+        free(OutBuffer);
+
         // Close the file
         fclose(INPUT_FILE);
         fclose(OUTPUT_FILE);
-
-        free(OutBuffer);
-        if(format != -1)
-        DeleteQueue(&ByteQueue);
     }
 
     return 0;
