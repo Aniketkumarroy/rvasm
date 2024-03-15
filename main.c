@@ -10,13 +10,13 @@
 
 FILE *INPUT_FILE = NULL;
 FILE *OUTPUT_FILE = NULL;
-unsigned int LINE_NO = 0;
 char ADDRESS[9] = "00000000";
 char *COMMENT = ";";
 int format = -1;
 int HEX_PRINT = 0;
-
+int INSTRUCTION_SIZE_BYTE = 4; // 4 byte instruction size
 unsigned int assembly_file_line_no = 0;
+struct Queue ByteQueue;
 
 void exit_from_program_with_message(char *msg, int e){
     printf("%s", msg);
@@ -61,46 +61,9 @@ void WriteToFile(char *code){
             HexadecimalAdder(ADDRESS, "4", ADDRESS);
         }
     }
-    // else {
-    //     // format will be:
-    //     // Address: 1_byte_CODE 1_byte_CODE ...
-    //     int line_size = 8 + 1 + 1 + 3*format; // 8(hexadecimal address) + 1(colon)+ 1(space) string of bytes separated by ' ' + 1(null character)
-    //     char buffer[line_size];
-    //     if(HEX_PRINT){
-    //         int j = 0;
-    //         char hex_code[9];
-            
-    //         int d = 1;
-    //         while (format/pow(10, d)) d++;
-            
-    //         char n_addr[d];
-    //         sprintf(n_addr, "%d", format);
-    //         BinarytoHexadecimal(code, hex_code);
-    //         while(j < 7) {
-
-    //             int n = format;
-    //             while (n > 0)
-    //             sprintf(buffer, "%s: ", ADDRESS); // ADDRESS:
-    //             char tmp = hex_code[j+2];
-    //             hex_code[j+2] = '\0';
-    //             strcat(buffer, hex_code + j);
-    //             if(j+2 != 8)
-    //             strcat(buffer, ' ');
-    //             else
-    //             strcat(buffer, '\0');
-    //             hex_code[j+2] = tmp;
-    //             j += 2;
-    //             fprintf(OUTPUT_FILE, "%s\n", buffer);
-    //             HexadecimalAdder(ADDRESS, n_addr, ADDRESS);
-    //         }
-    //     }
-    //     else {
-    //         strcat(buffer, code);                 // Address: CODE
-            
-    //         fprintf(OUTPUT_FILE, "%s\n", buffer);
-    //         HexadecimalAdder(ADDRESS, "4", ADDRESS);
-    //     }
-    // }
+    else {
+        if(HEX_PRINT) {}
+    }
 }
 
 void DirectiveType(char *code, char *mnemonics, void(*Writefunc)(char*), void(*Error)(char*, int)){
@@ -198,7 +161,8 @@ int main(int argc, char const *argv[])
     if (argc < 2){
         // no input file is provided
         printf("ERROR: input file not provided");
-    }else{
+    }
+    else{
         
         char buffer[32];
         // Open the file in read mode
@@ -228,14 +192,17 @@ int main(int argc, char const *argv[])
         // argument for getting type of format
         i = find(argc, argv, "-f");
         if(i != -1) {
-            if(i + 1 < argc)
-            format = atoi(argv[i+1]);
+            if(i + 1 < argc) {
+                format = atoi(argv[i+1]);
+                int s = (format > INSTRUCTION_SIZE_BYTE) ? format : INSTRUCTION_SIZE_BYTE;
+                int str_size = 9; // 8(1 for each 8 binary bits) + 1(null character)
+                InitializeQueue(&ByteQueue, s+1, str_size);
+            }
             else {
                 printf("format type not provided");
                 exit_from_program(0);
             }
         }
-
 
         // argument for getting the name of output file
         i = find(argc, argv, "-o");
@@ -249,7 +216,8 @@ int main(int argc, char const *argv[])
                 printf("output file name not provided");
                 exit_from_program(0);
             }
-        }else{
+        }
+        else{
             // if output file is not provided, use the name of input file
             char OUT[strlen(argv[1]) + 4];
             strcpy(OUT, argv[1]);
@@ -270,6 +238,9 @@ int main(int argc, char const *argv[])
         // Close the file
         fclose(INPUT_FILE);
         fclose(OUTPUT_FILE);
+
+        if(format != -1)
+        DeleteQueue(&ByteQueue);
     }
 
     return 0;
