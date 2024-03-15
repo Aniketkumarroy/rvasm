@@ -1,6 +1,7 @@
 #ifndef	UTIL
 #define UTIL
 
+extern const char* HELP;
 void RemoveSpaces(char **line);
 void RemoveComments(char *line, char *comment);
 void Preprocess(char **line, char *comment);

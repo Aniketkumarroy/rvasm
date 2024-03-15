@@ -210,6 +210,16 @@ int main(int argc, char const *argv[])
     }
     else{
         
+        int i = find(argc, argv, "-h");
+        if(i != -1) {
+            printf("%s", HELP);
+            return 0;
+        }
+        i = find(argc, argv, "-help");
+        if(i != -1) {
+            printf("%s", HELP);
+            return 0;
+        }
         char buffer[32];
         // Open the file in read mode
         INPUT_FILE = fopen(argv[1], "r");
@@ -220,7 +230,7 @@ int main(int argc, char const *argv[])
         }
 
         // argument for getting the comment symbol
-        int i = find(argc, argv, "-c");
+        i = find(argc, argv, "-c");
         if(i != -1) {
             if(i + 1 < argc)
             COMMENT = (char*)argv[i+1];
