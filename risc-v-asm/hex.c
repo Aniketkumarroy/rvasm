@@ -161,7 +161,7 @@ void HexadecimalToBinary(char *hex, char binaryString[], unsigned short size){
     }
 }
 void decimalToBinary(int decimalNumber, char binaryString[], unsigned short size, void(*error)(char*, int)) {
-    if (binaryString == NULL && error != NULL) error("NO binary no. is provided\n", 1);
+    if (binaryString == NULL && error != NULL) error("provide string is NULL\n", 1);
 
     // Use bitwise operations to convert decimal to binary
     for (int i = size-1; i >= 0; i--) {
@@ -170,6 +170,30 @@ void decimalToBinary(int decimalNumber, char binaryString[], unsigned short size
 
     // Null-terminate the string
     binaryString[size] = '\0';
+}
+void decimalToHexadecimal(int decimalNumber, char *hex, void (*error)(char*, int)){
+    if (hex == NULL && error != NULL) error("provide string is NULL\n", 0);
+
+    int r, i = 0;
+    while(decimalNumber != 0) {
+        r = decimalNumber%16;
+        if(r < 10) hex[i++] = r + 48;
+        else hex[i++] = r - 10 + 97;
+        decimalNumber /= 16;
+    }
+    hex[i] = '\0';
+
+    int s = strlen(hex);
+    char *end = hex + s - 1;
+    char tmp;
+    while(hex < end) {
+        tmp = *hex;
+        *hex = *end;
+        *end = tmp;
+        hex++;
+        end--;
+    }
+    hex = end;
 }
 void BinarytoHexadecimal(char *binary, char *hex){
     char tmp1[5], tmp2[2];

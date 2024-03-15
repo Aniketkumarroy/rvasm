@@ -17,6 +17,8 @@ int HEX_PRINT = 0;
 int INSTRUCTION_SIZE_BYTE = 4; // 4 byte instruction size
 unsigned int assembly_file_line_no = 0;
 struct Queue ByteQueue;
+char addrIncrement[9];
+char *OutBuffer;
 
 void exit_from_program_with_message(char *msg, int e){
     printf("%s", msg);
@@ -39,31 +41,44 @@ int find(int n_array, const char **c_array, char *c){
     return -1;
 }
 void WriteToFile(char *code){
+    sprintf(OutBuffer, "%s: ", ADDRESS); // ADDRESS:
     if(format == -1) {
         // format will be:
         // Address: CODE
         if(HEX_PRINT){
-            int line_size = 19; // 8(hexadecimal address) + 1(colon)+ 1(space) 4x2(instruction byte) + 1(null character)
-            char buffer[line_size];
-            sprintf(buffer, "%s: ", ADDRESS); // ADDRESS:
             char hex_code[9];
             BinarytoHexadecimal(code, hex_code);
-            strcat(buffer, hex_code);
-            fprintf(OUTPUT_FILE, "%s\n", buffer);
-            HexadecimalAdder(ADDRESS, "4", ADDRESS);
+            strcat(OutBuffer, hex_code);         // Address_NO: CODE
         }
         else {
-            int line_size = 43; // 8(hexadecimal address) + 1(colon)+ 1(space) 4x8(instruction byte) + 1(null character)
-            char buffer[line_size];
-            sprintf(buffer, "%s: ", ADDRESS); // ADDRESS:
-            strcat(buffer, code);                 // Address_NO: CODE
-            fprintf(OUTPUT_FILE, "%s\n", buffer);
-            HexadecimalAdder(ADDRESS, "4", ADDRESS);
+            strcat(OutBuffer, code);             // Address_NO: CODE
         }
     }
     else {
-        if(HEX_PRINT) {}
+        if(HEX_PRINT) {
+            char InstrByte[3], hex_code[9];
+            BinarytoHexadecimal(code, hex_code);
+            int i = 0;
+            while (i < INSTRUCTION_SIZE_BYTE) {
+                strncpy(InstrByte, hex_code + (2*i), 2);
+                InstrByte[2] = '\0';
+                enqueue(&ByteQueue, InstrByte);
+                i++;
+            }
+            
+            char *byte;
+            while(ByteQueue.no_elements >= format) {
+                for(int i = 0; i < format; i++) {
+                    byte = dequeue(&ByteQueue);
+                    if(byte == NULL) break;
+                    strcat(OutBuffer, byte);
+                    strcat(OutBuffer, " ");
+                }
+            }
+        }
     }
+    fprintf(OUTPUT_FILE, "%s\n", OutBuffer);
+    HexadecimalAdder(ADDRESS, addrIncrement, ADDRESS);
 }
 
 void DirectiveType(char *code, char *mnemonics, void(*Writefunc)(char*), void(*Error)(char*, int)){
@@ -195,8 +210,10 @@ int main(int argc, char const *argv[])
             if(i + 1 < argc) {
                 format = atoi(argv[i+1]);
                 int s = (format > INSTRUCTION_SIZE_BYTE) ? format : INSTRUCTION_SIZE_BYTE;
-                int str_size = 9; // 8(1 for each 8 binary bits) + 1(null character)
-                InitializeQueue(&ByteQueue, s+1, str_size);
+                int str_size;
+                if (HEX_PRINT) str_size = 3; // 2(for 1 byte) + 1(null character)
+                else str_size = 9; // 8(1 for each 8 binary bits) + 1(null character)
+                InitializeQueue(&ByteQueue, s+1, str_size, exit_from_program_with_message);
             }
             else {
                 printf("format type not provided");
@@ -227,6 +244,23 @@ int main(int argc, char const *argv[])
             OUTPUT_FILE = fopen(OUT, "w");
         }
 
+        if(format == -1) {
+            if(HEX_PRINT)
+            OutBuffer = (char*)malloc(sizeof(char)*19); // 19 = 8(hexadecimal address) + 1(colon)+ 1(space) 4x2(instruction byte) + 1(null character)
+            else
+            OutBuffer = (char*)malloc(sizeof(char)*43); // 43 = 8(hexadecimal address) + 1(colon)+ 1(space) 4x8(instruction byte) + 1(null character)
+
+            decimalToHexadecimal(INSTRUCTION_SIZE_BYTE, addrIncrement, exit_from_program_with_message);
+        }
+        else {
+            if(HEX_PRINT)
+            OutBuffer = (char*)malloc(sizeof(char)*(11 + 3*format)); // 11 + 3*format = 8(hexadecimal address) + 1(colon)+ 1(space) <format>x3(2 for instruction byte, 1 for space) + 1(null character)
+            else
+            OutBuffer = (char*)malloc(sizeof(char)*(11 + 9*format)); // 11 + 9*format = 8(hexadecimal address) + 1(colon)+ 1(space) <format>x9(8 for instruction byte, 1 for space) + 1(null character)
+
+            decimalToHexadecimal(format, addrIncrement, exit_from_program_with_message);
+        }
+        
         // reading every instruction
         while (fgets(buffer, sizeof(buffer), INPUT_FILE) != NULL) {
             assembly_file_line_no++;
@@ -239,6 +273,7 @@ int main(int argc, char const *argv[])
         fclose(INPUT_FILE);
         fclose(OUTPUT_FILE);
 
+        free(OutBuffer);
         if(format != -1)
         DeleteQueue(&ByteQueue);
     }

@@ -63,6 +63,7 @@ void enqueue(struct Queue* q, char* val){
     if (!isFull(q)){
         q->r = (q->r + 1)%q->size;
         strcpy(q->arr[q->r], val);
+        q->no_elements++;
     }
 }
 char* dequeue(struct Queue* q){
@@ -71,18 +72,25 @@ char* dequeue(struct Queue* q){
     if (!isEmpty(q)){
         q->f = (q->f + 1)%q->size;
         char* val = q->arr[q->f];
+        q->no_elements--;
         return val;
     }
     return NULL;
 }
-void InitializeQueue(struct Queue *q, int size, int str_size){
+void InitializeQueue(struct Queue *q, int size, int str_size, void (*error)(char*, int)){
     q->size = size;
+    q->str_size = str_size; // 8(1 for each 8 binary bits) + 1(null character)
     q->r = size - 1;
     q->f = size - 1;
+    q->no_elements = 0;
+
     q->arr = (char**)malloc(q->size*sizeof(char**));
-    q->str_size = str_size; // 8(1 for each 8 binary bits) + 1(null character)
-    for(int i = 0; i< q->size; i++)
-    q->arr[i] = (char*)malloc(q->str_size*sizeof(char*));
+    if(q->arr == NULL) error("cannot allocate memory for file output buffer", 0);
+    
+    for(int i = 0; i< q->size; i++) {
+        q->arr[i] = (char*)malloc(q->str_size*sizeof(char*));
+        if(q->arr[i] == NULL) error("cannot allocate memory for file output buffer", 0);
+    }
 }
 void DeleteQueue(struct Queue *q){
     for(int i = 0; i< q->size; i++)

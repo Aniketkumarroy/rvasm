@@ -10,6 +10,7 @@ void hexDigitToBinary(char hexDigit, char *binary, void (*error)(char*, int));
 char BinaryTohexDigit(char *binary);
 void HexadecimalToBinary(char *hex, char binaryString[], unsigned short size);
 void decimalToBinary(int decimalNumber, char binaryString[], unsigned short size, void (*error)(char*, int));
+void decimalToHexadecimal(int decimalNumber, char *hex, void (*error)(char*, int));
 void BinarytoHexadecimal(char *binary, char *hex);
 int hexDigitToDecimal(char c);
 uint32_t hexaDecimalToDecimal(char hex[9]);
