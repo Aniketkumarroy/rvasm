@@ -34,7 +34,7 @@ now you can use it by
 ```
 
 it will generate a file with name ```YOUR_CODE.out```
-for specifying the output file name use the use the ```-o``` flag
+for specifying the output file name use the ```-o``` flag
 ```bash
 ./rvasm YOUR_CODE -o output
 ```
@@ -60,10 +60,10 @@ Usage:
 ./rvasm [source file] | [-o output file] | [-c comment string] | [-hex hexadecimal format] | [-e little endian] | [-f format]
 
 Options:
--o, output file name, optionsl flag, default is <input file name>.out
--c, comment string, string that will be interpreted as a comment, optionsl flag, default is ';'
--hex, hexadecimal, to generate outpurt in hexadecimal number, optionsl flag, by default it generates output in binary numbers
--e, little endian, it produces output in Little Endian memory model, optionsl flag, by default big Endian is used
--f, format, it specifies how many bytes separated by spaces to be printed in each line of output file, optionsl flag, by default whole instruction is printed in a line without any spaces
+-o, output file name, optional flag, default is <input file name>.out
+-c, comment string, string that will be interpreted as a comment, optional flag, default is ';'
+-hex, hexadecimal, to generate output in hexadecimal format, optional flag, by default it generates output in binary format
+-e, little endian, it produces output in Little Endian memory model, optional flag, by default big Endian is used
+-f, format, it specifies how many bytes separated by spaces to be printed in each line of output file, optional flag, by default whole instruction is printed in a line without any spaces
 -h, -help, help flag
 ```

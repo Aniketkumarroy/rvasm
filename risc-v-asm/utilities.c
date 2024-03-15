@@ -9,11 +9,11 @@ const char* HELP = "rvasm is a assembler for RISC-V 32-bit instruction set archi
                    "Usage:\n"
                    "./rvasm [source file] | [-o output file] | [-c comment string] | [-hex hexadecimal format] | [-e little endian] | [-f format]\n\n"
                    "Options:\n"
-                   "-o, output file name, optionsl flag, default is <input file name>.out\n"
-                   "-c, comment string, string that will be interpreted as a comment, optionsl flag, default is ';'\n"
-                   "-hex, hexadecimal, to generate outpurt in hexadecimal number, optionsl flag, by default it generates output in binary numbers\n"
-                   "-e, little endian, it produces output in Little Endian memory model, optionsl flag, by default big Endian is used\n"
-                   "-f, format, it specifies how many bytes separated by spaces to be printed in each line of output file, optionsl flag, by default whole instruction is printed in a line without any spaces\n"
+                   "-o, output file name, optional flag, default is <input file name>.out\n"
+                   "-c, comment string, string that will be interpreted as a comment, optional flag, default is ';'\n"
+                   "-hex, hexadecimal, to generate output in hexadecimal format, optional flag, by default it generates output in binary format\n"
+                   "-e, little endian, it produces output in Little Endian memory model, optional flag, by default big Endian is used\n"
+                   "-f, format, it specifies how many bytes separated by spaces to be printed in each line of output file, optional flag, by default whole instruction is printed in a line without any spaces\n"
                    "-h, -help, help flag\n";
 
 void RemoveSpaces(char **line){
