@@ -14,6 +14,7 @@ char ADDRESS[9] = "00000000";
 char *COMMENT = ";";
 int format = -1;
 int HEX_PRINT = 0;
+int LITTLE_ENDIAN = 0;
 int INSTRUCTION_SIZE_BYTE = 4; // 4 byte instruction size
 unsigned int assembly_file_line_no = 0;
 struct Queue ByteQueue;
@@ -41,6 +42,23 @@ int find(int n_array, const char **c_array, char *c){
     return -1;
 }
 void WriteToFile(char *code){
+    if(LITTLE_ENDIAN) {
+        int s = strlen(code);
+        char *start = code;
+        char tmp;
+        char *end = code + s - 8;
+        while (start < end)
+        {
+            for(int i = 0; i < 8; i++) {
+                tmp = *(start + i);
+                *(start + i) = *(end + i);
+                *(end + i) = tmp;
+            }
+            start += 8;
+            end -= 8;
+        }
+    }
+
     if(format == -1) {
         // format will be:
         // Address: CODE
@@ -78,7 +96,7 @@ void WriteToFile(char *code){
                 i++;
             }
         }
-        
+
         char *byte;
         while(ByteQueue.no_elements >= format) {
             sprintf(OutBuffer, "%s: ", ADDRESS); // ADDRESS:
@@ -216,6 +234,11 @@ int main(int argc, char const *argv[])
         i = find(argc, argv, "-hex");
         if(i != -1)
         HEX_PRINT = 1;
+        
+        // argument for knowing whether to prodice output in Little Endian
+        i = find(argc, argv, "-e");
+        if(i != -1)
+        LITTLE_ENDIAN = 1;
 
         // argument for getting type of format
         i = find(argc, argv, "-f");
