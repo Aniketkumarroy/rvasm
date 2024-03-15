@@ -67,19 +67,29 @@ void WriteToFile(char *code){
                 enqueue(&ByteQueue, InstrByte);
                 i++;
             }
-            
-            char *byte;
-            while(ByteQueue.no_elements >= format) {
-                sprintf(OutBuffer, "%s: ", ADDRESS); // ADDRESS:
-                for(int i = 0; i < format; i++) {
-                    byte = dequeue(&ByteQueue);
-                    if(byte == NULL) break;
-                    strcat(OutBuffer, byte);
-                    strcat(OutBuffer, " ");
-                }
-                fprintf(OUTPUT_FILE, "%s\n", OutBuffer);
-                HexadecimalAdder(ADDRESS, addrIncrement, ADDRESS);
+        }
+        else {
+            char InstrByte[9];
+            int i = 0;
+            while (i < INSTRUCTION_SIZE_BYTE) {
+                strncpy(InstrByte, code + 8*i, 8);
+                InstrByte[9] = '\0';
+                enqueue(&ByteQueue, InstrByte);
+                i++;
             }
+        }
+        
+        char *byte;
+        while(ByteQueue.no_elements >= format) {
+            sprintf(OutBuffer, "%s: ", ADDRESS); // ADDRESS:
+            for(int i = 0; i < format; i++) {
+                byte = dequeue(&ByteQueue);
+                if(byte == NULL) break;
+                strcat(OutBuffer, byte);
+                strcat(OutBuffer, " ");
+            }
+            fprintf(OUTPUT_FILE, "%s\n", OutBuffer);
+            HexadecimalAdder(ADDRESS, addrIncrement, ADDRESS);
         }
     }
 }
