@@ -68,6 +68,6 @@ Options:
 -h, -help, help flag
 ```
 ## how to contribute
-if you want to add more instruction support, start first implementing a function in [InstructionEncoding.c](risc-v-asm/InstructionEncoding.c). take care of the function signature in [InstructionEncoding.h](risc-v-asm/include/InstructionEncoding.h). you may need to make the binary encoding for your instruction type, for that you need to define the encoding function in [rv32Encoding.h](risc-v-asm/include/rv32Encoding.h) and implement it [rv32Encoding.c](risc-v-asm/rv32Encoding.c).
+if you want to add more instruction support, start first implementing functional behaviour of the instruction in [InstructionEncoding.c](risc-v-asm/InstructionEncoding.c). add your function signature in [InstructionEncoding.h](risc-v-asm/include/InstructionEncoding.h). take care of the function signature format, its return type and parameter list should match the other function signatures in the file. you may also need to make the binary encoding for your instruction type, for that you need to define the encoding function in [rv32Encoding.h](risc-v-asm/include/rv32Encoding.h) and implement it in [rv32Encoding.c](risc-v-asm/rv32Encoding.c).
 
 once all this is done just add your function and its corresponding mnemonic in [main.c](main.c#opcode_lookup) in ``opcode_lookup``. remember to write the mnemonic in all smaller case.
